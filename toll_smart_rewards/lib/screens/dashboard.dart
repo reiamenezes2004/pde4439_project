@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:toll_smart_rewards/main.dart'; // for LoginScreen
 
 class Dashboard extends StatefulWidget {
   final String username;
@@ -40,12 +41,39 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void showTierInfo() {
+  void showLogoutConfirmation() {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1B003B),
-        title: const Text('Tier Information', style: TextStyle(color: Colors.white, fontSize: 20)),
+        title: const Text('Logout', style: TextStyle(color: Colors.white)),
+        content: const Text('Are you sure you want to logout?', style: TextStyle(color: Colors.white70)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                (route) => false,
+              );
+            },
+            child: const Text('Logout', style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void showTierInfo(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1B003B),
+        title: const Text('Tier Information', style: TextStyle(color: Colors.white)),
         content: const Text(
           '• Bronze: 0–49 pts\n• Silver: 50–99 pts\n• Gold: 100–199 pts\n• Platinum: 200+ pts',
           style: TextStyle(color: Colors.white70),
@@ -60,21 +88,56 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     );
   }
 
-  void showLogoutConfirm() {
+  void showCart(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Confirm Logout'),
-        content: const Text('Are you sure you want to logout?'),
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1B003B),
+        title: const Text('Your Cart', style: TextStyle(color: Colors.white)),
+        content: cart.isEmpty
+            ? const Text('No items added.', style: TextStyle(color: Colors.white70))
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: cart.map((item) {
+                  return ListTile(
+                    title: Text(item['title'], style: const TextStyle(color: Colors.white)),
+                    trailing: Text('${item['cost']} pts', style: const TextStyle(color: Colors.white54)),
+                  );
+                }).toList(),
+              ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          if (cart.isNotEmpty)
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    backgroundColor: const Color(0xFF1B003B),
+                    title: const Text('Confirm Redemption', style: TextStyle(color: Colors.white)),
+                    content: const Text('Are you sure you want to redeem all items in your cart?', style: TextStyle(color: Colors.white70)),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() => cart.clear());
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Redeem', style: TextStyle(color: Colors.greenAccent)),
+                      )
+                    ],
+                  ),
+                );
+              },
+              child: const Text('Redeem All', style: TextStyle(color: Colors.greenAccent)),
+            ),
           TextButton(
-            onPressed: () {
-              Navigator.pop(context); // close dialog
-              Navigator.pop(context); // go back to login
-            },
-            child: const Text('Logout', style: TextStyle(color: Colors.redAccent)),
-          ),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close', style: TextStyle(color: Colors.deepPurpleAccent)),
+          )
         ],
       ),
     );
@@ -119,16 +182,21 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                         style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
                         textAlign: TextAlign.center,
                       ),
-                      const Text('👋', style: TextStyle(fontSize: 26)),
+                      const Text('👋', style: TextStyle(fontSize: 40)),
                     ],
                   ),
                 ),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
+                      icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white),
+                      onPressed: () => showCart(context),
+                    ),
+                    IconButton(
                       icon: const Icon(Icons.logout, color: Colors.white),
-                      onPressed: showLogoutConfirm,
+                      onPressed: showLogoutConfirmation,
                     ),
                   ],
                 ),
@@ -146,18 +214,16 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.star, color: Colors.amberAccent),
-                          const SizedBox(width: 8),
-                          const Text('Points:', style: TextStyle(fontSize: 18, color: Colors.white70)),
-                          const Spacer(),
-                          GestureDetector(
-                            onTap: showTierInfo,
-                            child: const Icon(Icons.info_outline, color: Colors.white60),
-                          ),
-                        ],
-                      ),
+                      Row(children: [
+                        const Icon(Icons.star, color: Colors.amberAccent, size: 20),
+                        const SizedBox(width: 6),
+                        const Text('Total Points', style: TextStyle(fontSize: 20, color: Colors.white70)),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () => showTierInfo(context),
+                          child: const Icon(Icons.info_outline, color: Colors.white54, size: 20),
+                        )
+                      ]),
                       const SizedBox(height: 8),
                       Shimmer.fromColors(
                         baseColor: Colors.white,
@@ -168,13 +234,11 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(Icons.verified_user, color: Colors.white),
-                          const SizedBox(width: 6),
-                          Text('Tier: $tier', style: TextStyle(color: tierColor, fontSize: 16)),
-                        ],
-                      ),
+                      Row(children: [
+                        const Icon(Icons.verified_user, size: 20, color: Colors.white),
+                        const SizedBox(width: 6),
+                        Text('Tier: $tier', style: TextStyle(color: tierColor, fontSize: 18, fontWeight: FontWeight.w500)),
+                      ]),
                       const SizedBox(height: 12),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
@@ -185,13 +249,91 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                           backgroundColor: Colors.white24,
                         ),
                       ),
-                      Text('${(progress * 50).round()}/50 pts to next tier',
-                          style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                      const SizedBox(height: 6),
+                      Text('${(progress * 50).round()}/50 pts to next tier', style: const TextStyle(color: Colors.white70)),
                     ],
                   ),
                 ),
+                const SizedBox(height: 30),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Redeem Rewards', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: Colors.white)),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    children: [
+                      rewardCard('Water Bottle', 10, 'Bronze', Icons.local_drink),
+                      rewardCard('Coffee', 30, 'Silver', Icons.coffee),
+                      rewardCard('Car Wash', 70, 'Silver', Icons.local_car_wash),
+                      rewardCard('AED 20 Fuel', 100, 'Gold', Icons.local_gas_station),
+                      rewardCard('Gift Voucher', 150, 'Gold', Icons.card_giftcard),
+                      rewardCard('AED 50 Fuel', 200, 'Platinum', Icons.ev_station),
+                    ],
+                  ),
+                )
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget rewardCard(String title, int cost, String level, IconData icon) {
+    bool canRedeem = remainingPoints >= cost;
+    bool isInCart = cart.any((item) => item['title'] == title);
+
+    return ScaleTransition(
+      scale: Tween(begin: 1.0, end: 1.05).animate(
+        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+      ),
+      child: GestureDetector(
+        onTap: () {
+          if (!canRedeem && !isInCart) return;
+          setState(() {
+            if (isInCart) {
+              cart.removeWhere((item) => item['title'] == title);
+              remainingPoints += cost;
+            } else {
+              cart.add({'title': title, 'cost': cost});
+              remainingPoints -= cost;
+            }
+          });
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: isInCart ? Colors.green.shade700 : const Color(0xFF5A189A),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(color: Colors.black26, blurRadius: 4, offset: const Offset(2, 3)),
+            ],
+          ),
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 32, color: Colors.white),
+              const SizedBox(height: 10),
+              Text(title, style: const TextStyle(color: Colors.white, fontSize: 14), textAlign: TextAlign.center),
+              const SizedBox(height: 4),
+              Text('$cost pts', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              const SizedBox(height: 4),
+              Text('Level: $level', style: const TextStyle(color: Colors.white38, fontSize: 12)),
+              const SizedBox(height: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(6)),
+                child: Text(
+                  isInCart ? 'Remove' : 'Add to Cart',
+                  style: const TextStyle(color: Colors.white, fontSize: 11),
+                ),
+              )
+            ],
           ),
         ),
       ),

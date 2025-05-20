@@ -34,13 +34,16 @@ class DBHelper {
           'password': '1234',
           'first_name': 'Reia',
           'last_name': 'Menezes',
-          'points': 120,
+          'points': 150,
         });
       },
     );
   }
 
-  static Future<Map<String, dynamic>?> authenticateUser(String username, String password) async {
+  static Future<Map<String, dynamic>?> authenticateUser(
+    String username,
+    String password,
+  ) async {
     final db = await database;
     final result = await db.query(
       'users',
@@ -48,5 +51,20 @@ class DBHelper {
       whereArgs: [username, password],
     );
     return result.isNotEmpty ? result.first : null;
+  }
+
+  static Future<void> updatePoints(String username, int newPoints) async {
+    final db = await database;
+    await db.update(
+      'users',
+      {'points': newPoints},
+      where: 'username = ?',
+      whereArgs: [username],
+    );
+  }
+
+  static Future<List<Map<String, dynamic>>> getAllUsers() async {
+    final db = await database;
+    return await db.query('users');
   }
 }
