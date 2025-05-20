@@ -1,0 +1,46 @@
+
+Final Project Title:
+Salik SmartRewards – An Emotion-Aware Robotic Reward Redemption System for Toll Users
+
+Final Project Concept (What It Is):
+You are building a robotics-integrated kiosk designed to let frequent Salik users redeem loyalty rewards based on their toll usage. The kiosk combines a mobile app interface with embedded hardware to simulate a real-world smart rewards system. It integrates QR-based point validation, fingerprint authentication, emotional awareness, and robotic interaction feedback, offering users a secure and human-centric redemption experience.
+
+Final Feature List (Confirmed)
+
+SOFTWARE + APP FEATURES (iPad-based GUI)
+- User login + dashboard (enter username, view points)
+- QR code scanner using iPad rear camera
+- Real-time validation of points from a simulated CSV
+- Emotion detection via camera (DeepFace / FER)
+- Adaptive voice response using offline TTS
+- Transaction logging system with timestamped entries
+
+HARDWARE + ROBOTIC FEATURES (Arduino-controlled)
+- Fingerprint verification via R307 sensor
+- Reward dispensing mechanism using servo motor
+- Multi-color LED interaction mapping:
+  - Blue = QR scanning
+  - Yellow = Awaiting fingerprint
+  - Green = Success
+  - Red = Error / Mismatch
+- Secure reward compartment (with servo lock)
+- IR or ultrasonic sensor for presence or hand detection (optional)
+- Admin maintenance QR access for diagnostic and restock mode
+
+Robotics Value & Justification:
+This project goes beyond automation and enters robotic system territory through:
+- Human-Robot Interaction (emotion detection + voice + LEDs)
+- Multi-modal sensing (camera, fingerprint, optional IR)
+- State-based robotic behavior (LEDs, servo control, condition-based logic)
+- Secure, adaptive dispensing logic (based on points, interaction)
+
+What You'll Demonstrate in the Final Demo:
+1. User logs in via iPad GUI and sees their points.
+2. They scan a QR code (camera).
+3. The system detects their emotion → speaks a relevant message.
+4. QR gets validated → fingerprint prompt appears.
+5. LED changes throughout process (visual feedback).
+6. If fingerprint matches → reward is dispensed via servo into a tray.
+7. All data is logged (user, points used, timestamp, emotion).
+
+This is not just a reward machine. It’s an emotionally aware, sensor-integrated, multi-modal robotic kiosk — designed for public deployment, commercial scalability, and future extensions into smart city systems.
