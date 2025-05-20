@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'login_screen.dart';
 
 void main() {
   runApp(const TollSmartRewardsApp());
@@ -16,7 +17,7 @@ class TollSmartRewardsApp extends StatelessWidget {
         primaryColor: Colors.deepPurple,
         scaffoldBackgroundColor: const Color(0xFF1E1E2C),
       ),
-      home: const WelcomeScreen(),
+      home: const LoginScreen(),
     );
   }
 }
