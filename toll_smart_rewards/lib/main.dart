@@ -3,16 +3,16 @@ import 'helpers/db_helper.dart';
 import 'screens/dashboard.dart';
 
 void main() {
-  runApp(const SalikApp());
+  runApp(const TollApp());
 }
 
-class SalikApp extends StatelessWidget {
-  const SalikApp({super.key});
+class TollApp extends StatelessWidget {
+  const TollApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Salik SmartRewards',
+      title: 'Toll SmartRewards',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Montserrat',
@@ -85,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                'Salik SmartRewards',
+                'Toll SmartRewards',
                 style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
               ),
               const SizedBox(height: 10),
@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _username,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  hintText: 'Salik ID',
+                  hintText: 'Toll ID',
                   hintStyle: const TextStyle(color: Colors.white54),
                   filled: true,
                   fillColor: Colors.deepPurple.shade900,
@@ -139,6 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.only(top: 12),
                   child: Text(error, style: const TextStyle(color: Colors.redAccent)),
                 )
+                
             ],
           ),
         ),
