@@ -36,7 +36,8 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with TickerProviderStateMixin {
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
   bool _obscurePassword = true;
@@ -49,158 +50,187 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    _fadeController = AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
     _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(_fadeController);
     _fadeController.forward();
   }
 
   void login() async {
-  setState(() {
-    _isLoading = true;
-    error = '';
-  });
-
-  await Future.delayed(const Duration(seconds: 2));
-  final user = _username.text.trim();
-  final pass = _password.text.trim();
-
-  final result = await DBHelper.authenticateUser(user, pass);
-
-  if (!mounted) return;
-
-  if (result != null) {
-    Navigator.pushReplacement(
-      context,
-      PageRouteBuilder(
-        transitionDuration: const Duration(milliseconds: 800),
-        pageBuilder: (context, animation, secondaryAnimation) => FadeTransition(
-          opacity: animation,
-          child: Dashboard(
-            username: result['username'],
-            points: result['points'],
-            firstName: result['first_name'],
-            lastName: result['last_name'],
-          ),
-        ),
-      ),
-    );
-  } else {
     setState(() {
-      _isLoading = false;
-      error = 'Invalid credentials.';
+      _isLoading = true;
+      error = '';
     });
-  }
-}
 
+    await Future.delayed(const Duration(seconds: 2));
+    final user = _username.text.trim();
+    final pass = _password.text.trim();
+
+    final result = await DBHelper.authenticateUser(user, pass);
+
+    if (!mounted) return;
+
+    if (result != null) {
+      Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+          transitionDuration: const Duration(milliseconds: 800),
+          pageBuilder:
+              (context, animation, secondaryAnimation) => FadeTransition(
+                opacity: animation,
+                child: Dashboard(
+                  username: result['username'],
+                  points: result['points'],
+                  firstName: result['first_name'],
+                  lastName: result['last_name'],
+                ),
+              ),
+        ),
+      );
+    } else {
+      setState(() {
+        _isLoading = false;
+        error = 'Invalid credentials.';
+      });
+    }
+  }
 
   void showAppInfo() {
-  showDialog(
-    context: context,
-    builder: (context) => Dialog(
-      backgroundColor: const Color(0xFF2C003E),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.info_outline, color: Colors.purpleAccent, size: 36),
-            const SizedBox(height: 16),
-            const Text(
-              'About This App',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-              textAlign: TextAlign.center,
+    showDialog(
+      context: context,
+      builder:
+          (context) => Dialog(
+            backgroundColor: const Color(0xFF2C003E),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
             ),
-            const SizedBox(height: 14),
-            const Text(
-              'Toll SmartRewards is a futuristic loyalty program where you earn points for every toll trip. '
-              'Redeem points for fuel, car washes, and more—effortlessly!',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white70,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 30.0,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 28),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF9F5FFF),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                  elevation: 8,
-                  shadowColor: Colors.deepPurple.withOpacity(0.3),
-                ),
-                child: const Text('Close', style: TextStyle(fontSize: 18, color: Colors.white)),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.info_outline,
+                    color: Colors.purpleAccent,
+                    size: 36,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'About This App',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 14),
+                  const Text(
+                    'Toll SmartRewards is a futuristic loyalty program where you earn points for every toll trip. '
+                    'Redeem points for fuel, car washes, and more—effortlessly!',
+                    style: TextStyle(fontSize: 18, color: Colors.white70),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 28),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF9F5FFF),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        elevation: 8,
+                        shadowColor: Colors.deepPurple.withAlpha(
+                          (255 * 0.3).toInt(),
+                        ),
+                      ),
+                      child: const Text(
+                        'Close',
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
+          ),
+    );
+  }
 
-
-
- void showForgotPasswordDialog() {
-  showDialog(
-    context: context,
-    builder: (context) => Dialog(
-      backgroundColor: const Color(0xFF2C003E),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.lock_outline, color: Colors.purpleAccent, size: 36),
-            const SizedBox(height: 20),
-            const Text(
-              'Forgot Password',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-              textAlign: TextAlign.center,
+  void showForgotPasswordDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => Dialog(
+            backgroundColor: const Color(0xFF2C003E),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
             ),
-            const SizedBox(height: 14),
-            const Text(
-              'Please contact support@tollsmartrewards.ae to reset your password.',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white70,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 30.0,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 28),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF9F5FFF),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                  elevation: 8,
-                  shadowColor: Colors.deepPurple.withOpacity(0.3),
-                ),
-                child: const Text('OK', style: TextStyle(fontSize: 18, color: Colors.white)),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.lock_outline,
+                    color: Colors.purpleAccent,
+                    size: 36,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Forgot Password',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 14),
+                  const Text(
+                    'Please contact support@tollsmartrewards.ae to reset your password.',
+                    style: TextStyle(fontSize: 18, color: Colors.white70),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 28),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF9F5FFF),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        elevation: 8,
+                        shadowColor: Colors.deepPurple.withAlpha(
+                          (255 * 0.3).toInt(),
+                        ),
+                      ),
+                      child: const Text(
+                        'OK',
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
+          ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -240,7 +270,10 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                         const SizedBox(width: 20),
                         IconButton(
                           iconSize: 30,
-                          icon: const Icon(Icons.info_outline, color: Colors.white70),
+                          icon: const Icon(
+                            Icons.info_outline,
+                            color: Colors.white70,
+                          ),
                           onPressed: showAppInfo,
                         ),
                       ],
@@ -261,14 +294,20 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                       style: const TextStyle(color: Colors.white, fontSize: 25),
                       decoration: InputDecoration(
                         hintText: 'Toll ID',
-                        hintStyle: const TextStyle(color: Color(0xFFD3B8FF), fontSize: 25),
+                        hintStyle: const TextStyle(
+                          color: Color(0xFFD3B8FF),
+                          fontSize: 25,
+                        ),
                         filled: true,
                         fillColor: const Color(0xB33A206B),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 22, horizontal: 24),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 22,
+                          horizontal: 24,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 30),
@@ -278,17 +317,25 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                       style: const TextStyle(color: Colors.white, fontSize: 25),
                       decoration: InputDecoration(
                         hintText: 'Password',
-                        hintStyle: const TextStyle(color: Color(0xFFD3B8FF), fontSize: 25),
+                        hintStyle: const TextStyle(
+                          color: Color(0xFFD3B8FF),
+                          fontSize: 25,
+                        ),
                         filled: true,
                         fillColor: const Color(0xB33A206B),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 22, horizontal: 24),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 22,
+                          horizontal: 24,
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                             color: Colors.white,
                           ),
                           onPressed: () {
@@ -306,46 +353,59 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                         onPressed: showForgotPasswordDialog,
                         child: const Text(
                           'Forgot Password?',
-                          style: TextStyle(fontSize: 20, color: Colors.purpleAccent),
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.purpleAccent,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 20),
                     const SizedBox(height: 30),
                     _isLoading
-                        ? const CircularProgressIndicator(color: Color(0xFF9F5FFF))
+                        ? const CircularProgressIndicator(
+                          color: Color(0xFF9F5FFF),
+                        )
                         : SizedBox(
-                            width: size.width * 0.4,
-                            height: 55,
-                            child: ElevatedButton(
-                              onPressed: login,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF9F5FFF),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                elevation: 12,
-                                shadowColor: Colors.purpleAccent.withAlpha((255 * 0.4).toInt()),
+                          width: size.width * 0.4,
+                          height: 55,
+                          child: ElevatedButton(
+                            onPressed: login,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF9F5FFF),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
                               ),
-                              child: const Text(
-                                'LOGIN',
-                                style: TextStyle(fontSize: 20, color: Colors.white),
+                              elevation: 12,
+                              shadowColor: Colors.purpleAccent.withAlpha(
+                                (255 * 0.4).toInt(),
+                              ),
+                            ),
+                            child: const Text(
+                              'LOGIN',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
                               ),
                             ),
                           ),
+                        ),
                     if (error.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 16),
                         child: Text(
                           error,
-                          style: const TextStyle(color: Colors.redAccent, fontSize: 18),
+                          style: const TextStyle(
+                            color: Colors.redAccent,
+                            fontSize: 18,
+                          ),
                         ),
                       ),
                   ],
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
