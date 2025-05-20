@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 // import 'login_screen.dart';
-import 'dashboard_placeholder.dart';
+// import 'dashboard_placeholder.dart';
+// import 'qr_login_screen.dart';
+import 'dashboard.dart';
 
 void main() {
   runApp(const TollSmartRewardsApp());
@@ -18,7 +20,12 @@ class TollSmartRewardsApp extends StatelessWidget {
         primaryColor: Colors.deepPurple,
         scaffoldBackgroundColor: const Color(0xFF1E1E2C),
       ),
-      home: const DashboardPlaceholder(),
+      home: const Dashboard(
+        username: 'rmena',
+        points: 220,
+        firstName: 'Reia',
+        lastName: 'Menezes',
+      ),
     );
   }
 }
