@@ -31,7 +31,7 @@ class DBHelper {
 
         await db.insert('users', {
           'username': 'reia',
-          'password': '1234',
+          'password': '1326',
           'first_name': 'Reia',
           'last_name': 'Menezes',
           'points': 150,

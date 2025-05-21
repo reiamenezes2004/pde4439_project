@@ -163,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen>
             ),
           ),
     );
-  }
+  } 
 
   void showForgotPasswordDialog() {
     showDialog(
