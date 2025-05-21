@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen>
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'About This App',
+                    'About Us',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -131,8 +131,10 @@ class _LoginScreenState extends State<LoginScreen>
                   ),
                   const SizedBox(height: 14),
                   const Text(
-                    'Toll SmartRewards is a futuristic loyalty program where you earn points for every toll trip. '
-                    'Redeem points for fuel, car washes, and more—effortlessly!',
+                    'Toll SmartRewards is a next-generation reward redemption kiosk designed to enhance the experience' 
+                    ' of toll road users. By combining smart technology with seamless interaction, our system allows users'
+                    ' to redeem rewards effortlessly. With a focus on innovation, security, and user satisfaction, Toll SmartRewards brings convenience and' 
+                    ' appreciation to your everyday commute—because every journey deserves a reward :)',
                     style: TextStyle(fontSize: 18, color: Colors.white70),
                     textAlign: TextAlign.center,
                   ),
