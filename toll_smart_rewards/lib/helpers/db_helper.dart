@@ -67,4 +67,28 @@ class DBHelper {
     final db = await database;
     return await db.query('users');
   }
+
+  static Future<bool> doesUserExist(String username) async {
+    final db = await database;
+    final result = await db.query(
+      'users',
+      where: 'username = ?',
+      whereArgs: [username],
+    );
+    return result.isNotEmpty;
+  }
+
+  static Future<bool> updatePassword(
+    String username,
+    String newPassword,
+  ) async {
+    final db = await database;
+    final result = await db.update(
+      'users',
+      {'password': newPassword},
+      where: 'username = ?',
+      whereArgs: [username],
+    );
+    return result > 0; // true if a row was updated
+  }
 }
