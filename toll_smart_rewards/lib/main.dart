@@ -38,13 +38,14 @@ class _LoginScreenState extends State<LoginScreen>
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
   bool _obscurePassword = true;
-  bool _obscureNew = true;
-  bool _obscureConfirm = true;
   String error = '';
   bool _isLoading = false;
 
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
+
+  bool _obscureNew = true;
+  bool _obscureConfirm = true;
 
   @override
   void initState() {
@@ -71,21 +72,69 @@ class _LoginScreenState extends State<LoginScreen>
     if (!mounted) return;
 
     if (result != null) {
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          transitionDuration: const Duration(milliseconds: 800),
-          pageBuilder:
-              (context, animation, _) => FadeTransition(
-                opacity: animation,
-                child: Dashboard(
-                  username: result['username'],
-                  points: result['points'],
-                  firstName: result['first_name'],
-                  lastName: result['last_name'],
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder:
+            (_) => AlertDialog(
+              backgroundColor: const Color(0xFF2C003E),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: const Text(
+                'Login Successful!',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
                 ),
               ),
-        ),
+              content: const Text(
+                'Welcome back to Toll SmartRewards!',
+                style: TextStyle(color: Color(0xFFD3B8FF), fontSize: 16),
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushReplacement(
+                      context,
+                      PageRouteBuilder(
+                        transitionDuration: const Duration(milliseconds: 800),
+                        pageBuilder:
+                            (context, animation, _) => FadeTransition(
+                              opacity: animation,
+                              child: Dashboard(
+                                username: result['username'],
+                                points: result['points'],
+                                firstName: result['first_name'],
+                                lastName: result['last_name'],
+                              ),
+                            ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF9F5FFF),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                  ),
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
       );
     } else {
       setState(() {
@@ -128,7 +177,6 @@ class _LoginScreenState extends State<LoginScreen>
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 20),
                   const Text(
                     'Toll SmartRewards is a next-generation reward redemption kiosk designed to enhance the experience '
@@ -164,6 +212,78 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
+  void showPasswordResetSuccessDialog() {
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder:
+            (_) => AlertDialog(
+              backgroundColor: const Color(0xFF2C003E),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: const Text(
+                'Success!',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                ),
+              ),
+              content: const Text(
+                'Your new password has been updated.\nPlease log in again.',
+                style: TextStyle(color: Color(0xFFD3B8FF), fontSize: 16),
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context, rootNavigator: true).pop();
+                    setState(() {
+                      _username.text = '';
+                      _password.text = '';
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF9F5FFF),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                  ),
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    _username.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  //   @override
+  //   Widget build(BuildContext context) {
+  //     return const Placeholder(); // Replace this with your actual UI
+  //   }
+  // }
+
   void showResetPasswordDialog() {
     final usernameController = TextEditingController();
     final newPasswordController = TextEditingController();
@@ -171,163 +291,288 @@ class _LoginScreenState extends State<LoginScreen>
 
     bool usernameChecked = false;
     bool userExists = false;
+    String feedbackMessage = '';
+    Color feedbackColor = Colors.transparent;
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder:
           (_) => StatefulBuilder(
             builder:
                 (context, setState) => AlertDialog(
                   backgroundColor: const Color(0xFF1B003B),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(24),
                   ),
                   title: const Text(
                     'Reset Password',
-                    style: TextStyle(color: Colors.white, fontSize: 22),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (!usernameChecked) ...[
-                        TextField(
-                          controller: usernameController,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: const InputDecoration(
-                            hintText: 'Enter Username',
-                            hintStyle: TextStyle(color: Colors.white54),
-                          ),
-                        ),
-                      ] else if (userExists) ...[
-                        const Icon(
-                          Icons.check_circle,
-                          color: Colors.greenAccent,
-                          size: 28,
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: newPasswordController,
-                          obscureText: _obscureNew,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: 'New Password',
-                            hintStyle: const TextStyle(color: Colors.white54),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscureNew
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: Colors.white,
+                  content: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (!usernameChecked) ...[
+                          TextField(
+                            controller: usernameController,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              hintText: 'Enter Username',
+                              hintStyle: const TextStyle(color: Colors.white54),
+                              filled: true,
+                              fillColor: const Color(0xB33A206B),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide.none,
                               ),
-                              onPressed:
-                                  () => setState(
-                                    () => _obscureNew = !_obscureNew,
-                                  ),
                             ),
                           ),
-                        ),
+                        ] else if (userExists) ...[
+                          TextField(
+                            controller: newPasswordController,
+                            obscureText: _obscureNew,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              hintText: 'New Password',
+                              hintStyle: const TextStyle(color: Colors.white54),
+                              filled: true,
+                              fillColor: const Color(0xB33A206B),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide.none,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureNew
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Colors.white,
+                                ),
+                                onPressed:
+                                    () => setState(() {
+                                      _obscureNew = !_obscureNew;
+                                    }),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: confirmPasswordController,
+                            obscureText: _obscureConfirm,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              hintText: 'Confirm Password',
+                              hintStyle: const TextStyle(color: Colors.white54),
+                              filled: true,
+                              fillColor: const Color(0xB33A206B),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide.none,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureConfirm
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Colors.white,
+                                ),
+                                onPressed:
+                                    () => setState(() {
+                                      _obscureConfirm = !_obscureConfirm;
+                                    }),
+                              ),
+                            ),
+                          ),
+                        ],
                         const SizedBox(height: 10),
-                        TextField(
-                          controller: confirmPasswordController,
-                          obscureText: _obscureConfirm,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: 'Confirm Password',
-                            hintStyle: const TextStyle(color: Colors.white54),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscureConfirm
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: Colors.white,
-                              ),
-                              onPressed:
-                                  () => setState(
-                                    () => _obscureConfirm = !_obscureConfirm,
-                                  ),
-                            ),
+                        if (feedbackMessage.isNotEmpty)
+                          Text(
+                            feedbackMessage,
+                            style: TextStyle(color: feedbackColor),
                           ),
-                        ),
-                      ] else ...[
-                        const Text(
-                          'Username not found.',
-                          style: TextStyle(color: Colors.redAccent),
-                        ),
                       ],
-                    ],
+                    ),
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                     ElevatedButton(
                       onPressed: () async {
                         final user = usernameController.text.trim();
+
                         if (!usernameChecked) {
+                          if (user.isEmpty) {
+                            setState(() {
+                              feedbackMessage = 'Enter a valid username';
+                              feedbackColor = Colors.redAccent;
+                            });
+                            return;
+                          }
+
                           final exists = await DBHelper.doesUserExist(user);
                           setState(() {
                             usernameChecked = true;
                             userExists = exists;
+                            feedbackMessage =
+                                exists
+                                    ? 'Username found'
+                                    : 'Username not found';
+                            feedbackColor =
+                                exists ? Colors.greenAccent : Colors.redAccent;
+                          });
+                        } else if (usernameChecked && !userExists) {
+                          setState(() {
+                            usernameChecked = false;
+                            userExists = false;
+                            usernameController.clear();
+                            feedbackMessage = '';
+                            feedbackColor = Colors.transparent;
                           });
                         } else if (userExists) {
                           final newPass = newPasswordController.text;
                           final confirmPass = confirmPasswordController.text;
+
                           if (newPass != confirmPass) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Passwords do not match'),
-                              ),
-                            );
+                            setState(() {
+                              feedbackMessage = 'Passwords do not match';
+                              feedbackColor = Colors.redAccent;
+                            });
                             return;
                           }
+
                           final reused = await DBHelper.authenticateUser(
                             user,
                             newPass,
                           );
                           if (reused != null) {
-                            // ignore: use_build_context_synchronously
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('New password must be different'),
-                              ),
-                            );
+                            setState(() {
+                              feedbackMessage =
+                                  'New password must be different';
+                              feedbackColor = Colors.redAccent;
+                            });
                             return;
                           }
-                          if (!mounted) return;
-                          // ignore: use_build_context_synchronously
-                          Navigator.pop(context);
-                          showDialog(
-                            // ignore: use_build_context_synchronously
-                            context: context,
-                            builder:
-                                (_) => AlertDialog(
-                                  backgroundColor: Colors.deepPurple[900],
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  title: const Text(
-                                    'Success!',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  content: const Text(
-                                    'Password updated. You can now log in.',
-                                    style: TextStyle(color: Colors.white70),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                ),
+
+                          final success = await DBHelper.updatePassword(
+                            user,
+                            newPass,
                           );
+                          if (!success) {
+                            setState(() {
+                              feedbackMessage =
+                                  'Failed to update password. Try again.';
+                              feedbackColor = Colors.redAccent;
+                            });
+                            return;
+                          }
+
+                          if (!mounted) return;
+                          Navigator.pop(context);
+                          showPasswordResetSuccessDialog();
+
+                          Future.delayed(const Duration(milliseconds: 200), () {
+                            if (!mounted) return;
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder:
+                                  (_) => AlertDialog(
+                                    backgroundColor: const Color(0xFF2C003E),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    title: const Text(
+                                      'Success!',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 22,
+                                      ),
+                                    ),
+                                    content: const Text(
+                                      'Password updated. You can now log in.',
+                                      style: TextStyle(
+                                        color: Color(0xFFD3B8FF),
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    actions: [
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(
+                                            context,
+                                            rootNavigator: true,
+                                          ).pop();
+                                          setState(() {
+                                            _username.text = '';
+                                            _password.text = '';
+                                          });
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color(
+                                            0xFF9F5FFF,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 20,
+                                            vertical: 10,
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'OK',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                            );
+                          });
                         }
                       },
+
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: const Color(0xFF9F5FFF),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
                       ),
-                      child: Text(usernameChecked ? 'Update' : 'Check'),
+                      child: Text(
+                        !usernameChecked
+                            ? 'Check'
+                            : userExists
+                            ? 'Update'
+                            : 'Try Again',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -438,13 +683,25 @@ class _LoginScreenState extends State<LoginScreen>
                     const SizedBox(height: 10),
                     Align(
                       alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: showResetPasswordDialog,
-                        child: const Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.purpleAccent,
+                      child: GestureDetector(
+                        onTap: showResetPasswordDialog,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.purpleAccent.withOpacity(0.15),
+                          ),
+                          child: const Text(
+                            'Forgot Password?',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.purpleAccent,
+                              letterSpacing: 0.6,
+                            ),
                           ),
                         ),
                       ),
