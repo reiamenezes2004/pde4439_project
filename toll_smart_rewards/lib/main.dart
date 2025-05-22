@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screens/dashboard.dart';
 import 'helpers/db_helper.dart';
+import 'screens/dashboard.dart';
 
 void main() {
   runApp(const TollApp());
@@ -33,10 +33,13 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with TickerProviderStateMixin {
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
   bool _obscurePassword = true;
+  bool _obscureNew = true;
+  bool _obscureConfirm = true;
   String error = '';
   bool _isLoading = false;
 
@@ -46,7 +49,10 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    _fadeController = AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
     _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(_fadeController);
     _fadeController.forward();
   }
@@ -57,12 +63,11 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       error = '';
     });
 
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
     final user = _username.text.trim();
     final pass = _password.text.trim();
 
     final result = await DBHelper.authenticateUser(user, pass);
-
     if (!mounted) return;
 
     if (result != null) {
@@ -70,15 +75,16 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         context,
         PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 800),
-          pageBuilder: (context, animation, secondaryAnimation) => FadeTransition(
-            opacity: animation,
-            child: Dashboard(
-              username: result['username'],
-              points: result['points'],
-              firstName: result['first_name'],
-              lastName: result['last_name'],
-            ),
-          ),
+          pageBuilder:
+              (context, animation, _) => FadeTransition(
+                opacity: animation,
+                child: Dashboard(
+                  username: result['username'],
+                  points: result['points'],
+                  firstName: result['first_name'],
+                  lastName: result['last_name'],
+                ),
+              ),
         ),
       );
     } else {
@@ -90,188 +96,248 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   }
 
   void showAppInfo() {
-  showDialog(
-    context: context,
-    builder: (context) => Dialog(
-      backgroundColor: const Color(0xFF2C003E),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text(
-                  'About Us   ',
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+    showDialog(
+      context: context,
+      builder:
+          (_) => Dialog(
+            backgroundColor: const Color(0xFF2C003E),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Text(
+                        'About Us',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(
+                        Icons.info_outline,
+                        size: 26,
+                        color: Colors.purpleAccent,
+                      ),
+                    ],
                   ),
-                ),
-                Icon(
-                  Icons.info_outline,
-                  color: Colors.purpleAccent,
-                  size: 26,
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Toll SmartRewards is a next-generation reward redemption kiosk designed to enhance the experience '
-              'of toll road users. By combining smart technology with seamless interaction, our system allows users '
-              'to redeem rewards effortlessly. With a focus on innovation, security, and user satisfaction, Toll SmartRewards brings convenience and appreciation to your everyday commute—because every journey deserves a reward :)',
-              style: TextStyle(fontSize: 18, color: Colors.white70),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 45,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF9F5FFF),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  elevation: 6,
-                ),
-                child: const Text(
-                  'Close',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
+
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Toll SmartRewards is a next-generation reward redemption kiosk designed to enhance the experience '
+                    'of toll road users. By combining smart technology with seamless interaction, our system allows users '
+                    'to redeem rewards effortlessly. With a focus on innovation, security, and user satisfaction, Toll SmartRewards '
+                    'brings convenience and appreciation to your everyday commute—because every journey deserves a reward :)',
+                    style: TextStyle(color: Colors.white70, fontSize: 18),
+                    textAlign: TextAlign.justify,
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 45,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF9F5FFF),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 6,
+                      ),
+                      child: const Text(
+                        'Close',
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
-
+          ),
+    );
+  }
 
   void showResetPasswordDialog() {
-  final usernameController = TextEditingController();
-  final oldPasswordController = TextEditingController();
-  final newPasswordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
+    final usernameController = TextEditingController();
+    final newPasswordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
 
-  showDialog(
-    context: context,
-    builder: (context) {
-      bool usernameChecked = false;
-      bool userFound = false;
+    bool usernameChecked = false;
+    bool userExists = false;
 
-      return StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          backgroundColor: const Color(0xFF1B003B),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text('Reset Password', style: TextStyle(color: Colors.white, fontSize: 22)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (!usernameChecked) ...[
-                TextField(
-                  controller: usernameController,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    hintText: 'Enter Username',
-                    hintStyle: TextStyle(color: Colors.white38),
+    showDialog(
+      context: context,
+      builder:
+          (_) => StatefulBuilder(
+            builder:
+                (context, setState) => AlertDialog(
+                  backgroundColor: const Color(0xFF1B003B),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                ),
-              ] else if (userFound) ...[
-                TextField(
-                  controller: oldPasswordController,
-                  obscureText: true,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    hintText: 'Old Password',
-                    hintStyle: TextStyle(color: Colors.white38),
+                  title: const Text(
+                    'Reset Password',
+                    style: TextStyle(color: Colors.white, fontSize: 22),
                   ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: newPasswordController,
-                  obscureText: true,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    hintText: 'New Password',
-                    hintStyle: TextStyle(color: Colors.white38),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (!usernameChecked) ...[
+                        TextField(
+                          controller: usernameController,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: const InputDecoration(
+                            hintText: 'Enter Username',
+                            hintStyle: TextStyle(color: Colors.white54),
+                          ),
+                        ),
+                      ] else if (userExists) ...[
+                        const Icon(
+                          Icons.check_circle,
+                          color: Colors.greenAccent,
+                          size: 28,
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: newPasswordController,
+                          obscureText: _obscureNew,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            hintText: 'New Password',
+                            hintStyle: const TextStyle(color: Colors.white54),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureNew
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.white,
+                              ),
+                              onPressed:
+                                  () => setState(
+                                    () => _obscureNew = !_obscureNew,
+                                  ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        TextField(
+                          controller: confirmPasswordController,
+                          obscureText: _obscureConfirm,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            hintText: 'Confirm Password',
+                            hintStyle: const TextStyle(color: Colors.white54),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureConfirm
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.white,
+                              ),
+                              onPressed:
+                                  () => setState(
+                                    () => _obscureConfirm = !_obscureConfirm,
+                                  ),
+                            ),
+                          ),
+                        ),
+                      ] else ...[
+                        const Text(
+                          'Username not found.',
+                          style: TextStyle(color: Colors.redAccent),
+                        ),
+                      ],
+                    ],
                   ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final user = usernameController.text.trim();
+                        if (!usernameChecked) {
+                          final exists = await DBHelper.doesUserExist(user);
+                          setState(() {
+                            usernameChecked = true;
+                            userExists = exists;
+                          });
+                        } else if (userExists) {
+                          final newPass = newPasswordController.text;
+                          final confirmPass = confirmPasswordController.text;
+                          if (newPass != confirmPass) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Passwords do not match'),
+                              ),
+                            );
+                            return;
+                          }
+                          final reused = await DBHelper.authenticateUser(
+                            user,
+                            newPass,
+                          );
+                          if (reused != null) {
+                            // ignore: use_build_context_synchronously
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('New password must be different'),
+                              ),
+                            );
+                            return;
+                          }
+                          if (!mounted) return;
+                          // ignore: use_build_context_synchronously
+                          Navigator.pop(context);
+                          showDialog(
+                            // ignore: use_build_context_synchronously
+                            context: context,
+                            builder:
+                                (_) => AlertDialog(
+                                  backgroundColor: Colors.deepPurple[900],
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  title: const Text(
+                                    'Success!',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  content: const Text(
+                                    'Password updated. You can now log in.',
+                                    style: TextStyle(color: Colors.white70),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple,
+                      ),
+                      child: Text(usernameChecked ? 'Update' : 'Check'),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: confirmPasswordController,
-                  obscureText: true,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    hintText: 'Confirm Password',
-                    hintStyle: TextStyle(color: Colors.white38),
-                  ),
-                ),
-              ] else ...[
-                const Text(
-                  'Username not found. Please try again.',
-                  style: TextStyle(color: Colors.redAccent, fontSize: 16),
-                ),
-              ],
-            ],
           ),
-          actions: [
-            TextButton(
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
-              onPressed: () => Navigator.pop(context),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
-              child: Text(usernameChecked ? 'Update' : 'Check', style: const TextStyle(color: Colors.white)),
-              onPressed: () async {
-                final username = usernameController.text.trim();
-
-                if (!usernameChecked) {
-                  final exists = await DBHelper.doesUserExist(username);
-                  setState(() {
-                    usernameChecked = true;
-                    userFound = exists;
-                  });
-                } else if (userFound) {
-                  final oldPass = oldPasswordController.text.trim();
-                  final newPass = newPasswordController.text.trim();
-                  final confirmPass = confirmPasswordController.text.trim();
-
-                  final valid = await DBHelper.authenticateUser(username, oldPass);
-                  if (valid == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Old password incorrect.')));
-                    return;
-                  }
-
-                  if (newPass != confirmPass) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwords do not match.')));
-                    return;
-                  }
-
-                  final success = await DBHelper.updatePassword(username, newPass);
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(success ? 'Password updated!' : 'Failed to update.')),
-                  );
-                }
-              },
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
-
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
     return Scaffold(
       body: Stack(
         children: [
@@ -297,12 +363,16 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                       children: [
                         const Text(
                           'Toll SmartRewards',
-                          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Color(0xFFEADCFD)),
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFEADCFD),
+                          ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 10),
                         IconButton(
-                          iconSize: 30,
-                          icon: const Icon(Icons.info_outline, color: Colors.white70),
+                          icon: const Icon(Icons.info_outline),
+                          color: Colors.white70,
                           onPressed: showAppInfo,
                         ),
                       ],
@@ -310,20 +380,28 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                     const SizedBox(height: 12),
                     const Text(
                       'because your commute deserves a reward :)',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic, color: Color(0xFFB9A2D8)),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontStyle: FontStyle.italic,
+                        color: Color(0xFFB9A2D8),
+                      ),
                     ),
-                    const SizedBox(height: 50),
+                    const SizedBox(height: 40),
                     TextField(
                       controller: _username,
                       style: const TextStyle(color: Colors.white, fontSize: 22),
                       decoration: InputDecoration(
                         hintText: 'Username',
-                        hintStyle: const TextStyle(color: Color(0xFFD3B8FF), fontSize: 20),
+                        hintStyle: const TextStyle(
+                          color: Color(0xFFD3B8FF),
+                          fontSize: 20,
+                        ),
                         filled: true,
                         fillColor: const Color(0xB33A206B),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 22, horizontal: 24),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 30),
@@ -333,14 +411,27 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                       style: const TextStyle(color: Colors.white, fontSize: 22),
                       decoration: InputDecoration(
                         hintText: 'Password',
-                        hintStyle: const TextStyle(color: Color(0xFFD3B8FF), fontSize: 20),
+                        hintStyle: const TextStyle(
+                          color: Color(0xFFD3B8FF),
+                          fontSize: 20,
+                        ),
                         filled: true,
                         fillColor: const Color(0xB33A206B),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 22, horizontal: 24),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
                         suffixIcon: IconButton(
-                          icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.white),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: Colors.white,
+                          ),
+                          onPressed:
+                              () => setState(
+                                () => _obscurePassword = !_obscurePassword,
+                              ),
                         ),
                       ),
                     ),
@@ -349,30 +440,44 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: showResetPasswordDialog,
-                        child: const Text('Forgot Password?', style: TextStyle(fontSize: 20, color: Colors.purpleAccent)),
+                        child: const Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.purpleAccent,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 30),
                     _isLoading
-                        ? const CircularProgressIndicator(color: Color(0xFF9F5FFF))
-                        : SizedBox(
-                            width: size.width * 0.4,
-                            height: 55,
-                            child: ElevatedButton(
-                              onPressed: login,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF9F5FFF),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                                elevation: 12,
-                                shadowColor: Colors.purpleAccent.withOpacity(0.4),
-                              ),
-                              child: const Text('LOGIN', style: TextStyle(fontSize: 20, color: Colors.white)),
+                        ? const CircularProgressIndicator(
+                          color: Color(0xFF9F5FFF),
+                        )
+                        : ElevatedButton(
+                          onPressed: login,
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: Size(size.width * 0.5, 55),
+                            backgroundColor: const Color(0xFF9F5FFF),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
                             ),
                           ),
+                          child: const Text(
+                            'LOGIN',
+                            style: TextStyle(fontSize: 20, color: Colors.white),
+                          ),
+                        ),
                     if (error.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 16),
-                        child: Text(error, style: const TextStyle(color: Colors.redAccent, fontSize: 18)),
+                        child: Text(
+                          error,
+                          style: const TextStyle(
+                            color: Colors.redAccent,
+                            fontSize: 18,
+                          ),
+                        ),
                       ),
                   ],
                 ),

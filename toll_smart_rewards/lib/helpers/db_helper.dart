@@ -39,19 +39,16 @@ class DBHelper {
       },
     );
   }
+static Future<Map<String, dynamic>?> authenticateUser(String username, String password) async {
+  final db = await database;
+  final result = await db.query(
+    'users',
+    where: 'username = ? AND password = ?',
+    whereArgs: [username, password],
+  );
+  return result.isNotEmpty ? result.first : null;
+}
 
-  static Future<Map<String, dynamic>?> authenticateUser(
-    String username,
-    String password,
-  ) async {
-    final db = await database;
-    final result = await db.query(
-      'users',
-      where: 'username = ? AND password = ?',
-      whereArgs: [username, password],
-    );
-    return result.isNotEmpty ? result.first : null;
-  }
 
   static Future<void> updatePoints(String username, int newPoints) async {
     final db = await database;
@@ -68,7 +65,7 @@ class DBHelper {
     return await db.query('users');
   }
 
-  static Future<bool> doesUserExist(String username) async {
+static Future<bool> checkUserExists(String username) async{
     final db = await database;
     final result = await db.query(
       'users',
@@ -77,18 +74,35 @@ class DBHelper {
     );
     return result.isNotEmpty;
   }
+static Future<bool> doesUserExist(String username) async {
+  final db = await database;
+  final result = await db.query(
+    'users',
+    where: 'username = ?',
+    whereArgs: [username],
+  );
+  return result.isNotEmpty;
+}
 
-  static Future<bool> updatePassword(
-    String username,
-    String newPassword,
-  ) async {
-    final db = await database;
-    final result = await db.update(
-      'users',
-      {'password': newPassword},
-      where: 'username = ?',
-      whereArgs: [username],
-    );
-    return result > 0; // true if a row was updated
-  }
+ static Future<bool> updatePassword(String username, String newPassword) async {
+  final db = await database;
+  final result = await db.update(
+    'users',
+    {'password': newPassword},
+    where: 'username = ?',
+    whereArgs: [username],
+  );
+  return result > 0;
+}
+
+
+static Future<Map<String, dynamic>?> getUser(String username) async {
+  final db = await database;
+  final result = await db.query(
+    'users',
+    where: 'username = ?',
+    whereArgs: [username],
+  );
+  return result.isNotEmpty ? result.first : null;
+}
 }
