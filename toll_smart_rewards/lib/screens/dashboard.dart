@@ -79,7 +79,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
             Text(
-              'Points and Tiers Information',
+              'Points and Tiers Information ',
               style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
             ),
             Icon(Icons.info_outline, color: Colors.purpleAccent, size: 30),

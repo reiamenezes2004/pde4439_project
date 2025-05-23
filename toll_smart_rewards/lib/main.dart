@@ -607,7 +607,7 @@ class _LoginScreenState extends State<LoginScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          'Toll SmartRewards',
+                          'Toll Smart Rewards',
                           style: TextStyle(
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
