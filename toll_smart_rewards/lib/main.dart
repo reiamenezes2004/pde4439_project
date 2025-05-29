@@ -12,7 +12,7 @@ class TollApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Toll SmartRewards',
+      title: 'Toll Smart Rewards',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Montserrat',
@@ -90,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
               ),
               content: const Text(
-                'Welcome back to Toll SmartRewards!',
+                'Welcome back to Toll Smart Rewards!',
                 style: TextStyle(color: Color(0xFFD3B8FF), fontSize: 16),
               ),
               actions: [
@@ -114,6 +114,7 @@ class _LoginScreenState extends State<LoginScreen>
                       ),
                     );
                   },
+
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF9F5FFF),
                     shape: RoundedRectangleBorder(
@@ -179,9 +180,9 @@ class _LoginScreenState extends State<LoginScreen>
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    'Toll SmartRewards is a next-generation reward redemption kiosk designed to enhance the experience '
+                    'Toll Smart Rewards is a next-generation reward redemption kiosk designed to enhance the experience '
                     'of toll road users. By combining smart technology with seamless interaction, our system allows users '
-                    'to redeem rewards effortlessly. With a focus on innovation, security, and user satisfaction, Toll SmartRewards '
+                    'to redeem rewards effortlessly. With a focus on innovation, security, and user satisfaction, Toll Smart Rewards '
                     'brings convenience and appreciation to your everyday commute—because every journey deserves a reward :)',
                     style: TextStyle(color: Colors.white70, fontSize: 18),
                     textAlign: TextAlign.justify,
@@ -332,7 +333,8 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                             ),
                           ),
-                        ] else if (userExists) ...[
+                          const SizedBox(height: 16),
+
                           TextField(
                             controller: newPasswordController,
                             obscureText: _obscureNew,
@@ -605,8 +607,8 @@ class _LoginScreenState extends State<LoginScreen>
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
+                      children: const [
+                        Text(
                           'Toll Smart Rewards',
                           style: TextStyle(
                             fontSize: 40,
@@ -614,17 +616,12 @@ class _LoginScreenState extends State<LoginScreen>
                             color: Color(0xFFEADCFD),
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        IconButton(
-                          icon: const Icon(Icons.info_outline),
-                          color: Colors.white70,
-                          onPressed: showAppInfo,
-                        ),
                       ],
                     ),
                     const SizedBox(height: 12),
                     const Text(
                       'because your commute deserves a reward :)',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20,
                         fontStyle: FontStyle.italic,
@@ -683,29 +680,21 @@ class _LoginScreenState extends State<LoginScreen>
                     const SizedBox(height: 10),
                     Align(
                       alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: showResetPasswordDialog,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: Colors.purpleAccent.withOpacity(0.15),
-                          ),
-                          child: const Text(
-                            'Forgot Password?',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.purpleAccent,
-                              letterSpacing: 0.6,
-                            ),
+                      child: TextButton(
+                        onPressed: () {
+                          // Add reset password logic here
+                        },
+                        child: const Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.purpleAccent,
                           ),
                         ),
                       ),
                     ),
+                    const SizedBox(height: 20),
+
                     const SizedBox(height: 30),
                     _isLoading
                         ? const CircularProgressIndicator(
